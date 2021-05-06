@@ -1,1 +1,23 @@
+from androidhelper import sl4a
+from haversine import haversine, Unit
+from geographiclib.geodesic import Geodesic
 
+
+def main():
+    droid = sl4a.Android()
+    while True:
+        droid.startLocating()
+        droid.eventWaitFor('location', int(9000))
+        location = droid.readLocation().result
+        try:
+            print('Coordinates received')
+            return (location['network']['latitude'], location['network']['longitude'])
+        except KeyError:
+            continue
+
+
+target1, target2 = main(), input('Enter target coordinates: ').split()
+target2 = float(target2[0]), float(target2[1])
+print('Target distance received:', haversine(target1, target2, unit=Unit.METERS), sep='\n')
+geodesic = Geodesic.WGS84
+print(geodesic.Inverse(target1, target2)['azi1'])
