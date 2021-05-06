@@ -23,19 +23,19 @@ target2 = float(target2[0]), float(target2[1])
 print('Target distance received:', haversine(target1, target2, unit=Unit.METERS), sep='\n')
 geodesic = Geodesic.WGS84
 direction = geodesic.Inverse(target1, target2)['azi1']
-if 0 >= direction <= 22 or 338 >= direction <= 360:
+if (direction >= 0 and direction <= 22) or (direction >= 338 and direction <= 360):
     print('The target is north of you')
-elif 293 >= direction <= 337:
+elif direction >= 293 and direction <= 337:
     print('The target is northwest of you')
-elif 248 >= direction <= 292:
+elif direction >= 248 and direction <= 292:
     print('The target is west of you')
-elif 203 >= direction <= 247:
+elif direction >= 203 and direction <= 247:
     print('The target is southwest of you')
-elif 158 >= direction <= 202:
+elif direction >= 158 and direction <= 202:
     print('The target is south of you')
-elif 113 >= direction <= 157:
+elif direction >= 113 and direction <= 157:
     print('The target is southeast of you')
-elif 76 >= direction <= 112:
+elif direction >= 76 and direction <= 112:
     print('The target is east of you')
-elif 23 >= direction <= 75:
+elif direction >= 23 and direction <= 75:
     print('The target is northwest of you')
