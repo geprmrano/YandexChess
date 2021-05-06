@@ -1,6 +1,7 @@
 from androidhelper import sl4a
 from haversine import haversine, Unit
 from geographiclib.geodesic import Geodesic
+import folium, random
 
 
 def main():
@@ -10,8 +11,9 @@ def main():
         droid.eventWaitFor('location', int(9000))
         location = droid.readLocation().result
         try:
+            x, y = location['network']['latitude'], location['network']['longitude']
             print('Coordinates received')
-            return (location['network']['latitude'], location['network']['longitude'])
+            return [x, y]
         except KeyError:
             continue
 
@@ -19,10 +21,10 @@ def main():
 target1 = main()
 print('Enter target coordinates: ')
 target2 = input().split()
-target2 = float(target2[0]), float(target2[1])
+target2 = [float(target2[0]), float(target2[1])]
 print('Target distance received:', haversine(target1, target2, unit=Unit.METERS), sep='\n')
 geodesic = Geodesic.WGS84
-direction = geodesic.Inverse(target1, target2)['azi1']
+direction = geodesic.Inverse(target1[0], target1[1], target2[0], target2[1])['azi1']
 if (direction >= 0 and direction <= 22) or (direction >= 338 and direction <= 360):
     print('The target is north of you')
 elif direction >= 293 and direction <= 337:
@@ -39,3 +41,6 @@ elif direction >= 76 and direction <= 112:
     print('The target is east of you')
 elif direction >= 23 and direction <= 75:
     print('The target is northwest of you')
+mainmap = folium.Map(location=target1, zoom_start=19, tiles='Stamen Toner')
+folium.Marker(location=target2, icon=folium.Icon(color='blue')).add_to(mainmap)
+mainmap.save(f'index.{random.randint(1, 10000)}')
