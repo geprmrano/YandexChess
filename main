@@ -1,7 +1,8 @@
 from androidhelper import sl4a
 from haversine import haversine, Unit
 from geographiclib.geodesic import Geodesic
-import folium, random
+import folium
+import random
 
 
 def main():
@@ -18,29 +19,61 @@ def main():
             continue
 
 
-target1 = main()
-print('Enter target coordinates: ')
-target2 = input().split()
-target2 = [float(target2[0]), float(target2[1])]
-print('Target distance received:', haversine(target1, target2, unit=Unit.METERS), sep='\n')
-geodesic = Geodesic.WGS84
-direction = geodesic.Inverse(target1[0], target1[1], target2[0], target2[1])['azi1']
-if (direction >= 0 and direction <= 22) or (direction >= 338 and direction <= 360):
-    print('The target is north of you')
-elif direction >= 293 and direction <= 337:
-    print('The target is northwest of you')
-elif direction >= 248 and direction <= 292:
-    print('The target is west of you')
-elif direction >= 203 and direction <= 247:
-    print('The target is southwest of you')
-elif direction >= 158 and direction <= 202:
-    print('The target is south of you')
-elif direction >= 113 and direction <= 157:
-    print('The target is southeast of you')
-elif direction >= 76 and direction <= 112:
-    print('The target is east of you')
-elif direction >= 23 and direction <= 75:
-    print('The target is northwest of you')
-mainmap = folium.Map(location=target1, zoom_start=19, tiles='Stamen Toner')
-folium.Marker(location=target2, icon=folium.Icon(color='blue')).add_to(mainmap)
-mainmap.save(f'index.{random.randint(1, 10000)}')
+def direct(target1, target2):
+    geodesic = Geodesic.WGS84
+    direction = geodesic.Inverse(target1[0], target1[1], target2[0], target2[1])['azi1']
+    if (direction >= 0 and direction <= 22) or (direction >= 338 and direction <= 360):
+        print('The target is north of you')
+    elif direction >= 293 and direction <= 337:
+        print('The target is northwest of you')
+    elif direction >= 248 and direction <= 292:
+        print('The target is west of you')
+    elif direction >= 203 and direction <= 247:
+        print('The target is southwest of you')
+    elif direction >= 158 and direction <= 202:
+        print('The target is south of you')
+    elif direction >= 113 and direction <= 157:
+        print('The target is southeast of you')
+    elif direction >= 76 and direction <= 112:
+        print('The target is east of you')
+    elif direction >= 23 and direction <= 75:
+        print('The target is northwest of you')
+
+
+def dist(target1, target2):
+    return haversine(target1, target2, unit=Unit.METERS)
+
+
+def map(answer2, zoom=20):
+    global target1
+    global target2
+    if answer2 == 'no':
+        exit()
+    elif answer2 == 'yes':
+        maps = folium.Map(location=target1, zoom_start=zoom, tiles='Stamen Toner')
+        folium.Marker(location=target1, icon=folium.Icon(color='green')).add_to(maps)
+        print('You want to put a marker on the target? (yes/no)')
+        answer3 = input()
+        if answer3 == 'yes':
+            folium.Marker(location=target2, icon=folium.Icon(color='blue')).add_to(maps)
+            rang = random.randint(1, 10000)
+            maps.save(f'index{rang}.html')
+            print(f'File saved as "index{rang}.html"')
+
+
+if __name__ == '__main__':
+    target1 = main()
+    print('Do you want to see your coordinates? (yes/no)')
+    answer1 = input()
+    if answer1 == 'yes':
+        print(target1)
+    else:
+        pass
+    print('Enter target coordinates: ')
+    target2 = input().split()
+    target2 = [float(target2[0]), float(target2[1])]
+    print('Target distance received:', dist(target1, target2), sep='\n')
+    print(direct(target1, target2))
+    print('Do you want to create a map? (yes/no)')
+    answer2 = input()
+    print(map(answer2))    
